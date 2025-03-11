@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.CredentialsContainer;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -35,6 +36,20 @@ public class Customer implements CredentialsContainer {
     @Size(max = 50, message = "Last name cannot exceed 50 characters")
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
+
+    @ElementCollection
+    @CollectionTable(name = "customer_service_preferences", joinColumns = @JoinColumn(name = "customer_id"))
+    @Column(name = "preference")
+    private Set<String> servicePreferences;
+
+    @Column(name = "lawn_size")
+    private double lawnSize;
+
+    @ElementCollection
+    @CollectionTable(name = "customer_property_photos", joinColumns = @JoinColumn(name = "customer_id"))
+    @Column(name = "photo_url")
+    private Set<String> propertyPhotos;
+
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")

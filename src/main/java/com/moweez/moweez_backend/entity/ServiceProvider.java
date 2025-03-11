@@ -11,13 +11,14 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.CredentialsContainer;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "drivers", indexes = { @Index(name = "idx_drivers_email", columnList = "email") })
 @EntityListeners(AuditingEntityListener.class) // Enable JPA Auditing for this entity
-public class Driver implements CredentialsContainer {
+public class ServiceProvider implements CredentialsContainer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,6 +54,38 @@ public class Driver implements CredentialsContainer {
     @Size(max = 50, message = "License number cannot exceed 50 characters")
     @Column(name = "license_number", nullable = false, length = 50)
     private String licenseNumber;
+
+    @ElementCollection
+    @CollectionTable(name = "driver_service_areas", joinColumns = @JoinColumn(name = "driver_id"))
+    @Column(name = "service_area")
+    private Set<String> serviceAreas;
+
+    @ElementCollection
+    @CollectionTable(name = "driver_equipment", joinColumns = @JoinColumn(name = "driver_id"))
+    @Column(name = "equipment")
+    private Set<String> equipmentDetails;
+    
+    @ElementCollection
+    @CollectionTable(name = "driver_availability", joinColumns = @JoinColumn(name = "driver_id"))
+    @Column(name = "available_time")
+    private Set<LocalDateTime> availabilitySchedule;
+    
+        @Column(name = "job_completion_rate", nullable = false)
+    private double jobCompletionRate = 0.0;
+    
+    @Column(name = "safety_incident_count", nullable = false)
+    private int safetyIncidentCount = 0;
+
+    @Column(name = "customer_feedback_score", nullable = false)
+    private double customerFeedbackScore = 0.0;
+    
+    @ElementCollection
+    @CollectionTable(name = "service_provider_certifications", joinColumns = @JoinColumn(name = "service_provider_id"))
+    @Column(name = "certification")
+    private Set<String> certifications;
+    
+    @Column(name = "revenue_per_labor_hour", nullable = false)
+    private double revenuePerLaborHour = 0.0;
 
     @Column(nullable = false)
     private double rating = 0.0;
