@@ -16,7 +16,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "drivers", indexes = { @Index(name = "idx_drivers_email", columnList = "email") })
+@Table(name = "service_provider", indexes = { @Index(name = "idx_service_provider_email", columnList = "email") })
 @EntityListeners(AuditingEntityListener.class) // Enable JPA Auditing for this entity
 public class ServiceProvider implements CredentialsContainer {
 
