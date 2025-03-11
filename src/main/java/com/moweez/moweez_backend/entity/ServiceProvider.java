@@ -70,7 +70,7 @@ public class ServiceProvider implements CredentialsContainer {
     @Column(name = "available_time")
     private Set<LocalDateTime> availabilitySchedule;
     
-        @Column(name = "job_completion_rate", nullable = false)
+    @Column(name = "job_completion_rate", nullable = false)
     private double jobCompletionRate = 0.0;
     
     @Column(name = "safety_incident_count", nullable = false)
@@ -106,7 +106,7 @@ public class ServiceProvider implements CredentialsContainer {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Role role = Role.DRIVER;
+    private Role role = Role.SERVICE_PROVIDER; //
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
