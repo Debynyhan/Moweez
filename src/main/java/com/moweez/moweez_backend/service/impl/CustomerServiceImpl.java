@@ -1,6 +1,7 @@
 package com.moweez.moweez_backend.service.impl;
 
-import com.moweez.moweez_backend.dto.CustomerDTO;
+import com.moweez.moweez_backend.dto.CustomerRequest;
+import com.moweez.moweez_backend.dto.CustomerResponse;
 import com.moweez.moweez_backend.entity.Customer;
 import com.moweez.moweez_backend.exception.ResourceNotFoundException;
 import com.moweez.moweez_backend.mapper.CustomerMapper;
@@ -8,9 +9,11 @@ import com.moweez.moweez_backend.repository.CustomerRepository;
 import com.moweez.moweez_backend.service.CustomerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.Valid;
+
 
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -24,42 +27,47 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
     }
-
+    /**
+     * Retrieves all customers from the repository and maps them to CustomerResponse DTOs.
+     *
+     * @return List of CustomerResponse DTOs representing all customers.
+     */
     @Override
-    public List<CustomerDTO> getAllCustomers() {
+    public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAll()
                 .stream()
-                .map(customerMapper::toDTO)
+                .map(customerMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<CustomerDTO> getCustomerById(Long id) {
-        return customerRepository.findById(id)
-                .map(customerMapper::toDTO);
+    public CustomerResponse getCustomerById(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id " + id));
+        return customerMapper.toResponse(customer);
     }
 
     @Override
-    public CustomerDTO createCustomer(CustomerDTO customerDTO) {
-        Customer customer = customerMapper.toEntity(customerDTO);
+    public CustomerResponse createCustomer(@Valid CustomerRequest request) {
+        Customer customer = customerMapper.toEntity(request);
         Customer savedCustomer = customerRepository.save(customer);
-        return customerMapper.toDTO(savedCustomer);
+        return customerMapper.toResponse(savedCustomer);
     }
 
     @Override
-    public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
+    public CustomerResponse updateCustomer(Long id, @Valid CustomerRequest customerRequest) {
         Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id " + id));
 
         // Update fields (you could also use a mapper that updates non-null properties)
-        existingCustomer.setFirstName(customerDTO.getFirstName());
-        existingCustomer.setLastName(customerDTO.getLastName());
-        existingCustomer.setEmail(customerDTO.getEmail());
-        existingCustomer.setPhone(customerDTO.getPhone());
-        existingCustomer.setAddress(customerDTO.getAddress());
+        existingCustomer.setFirstName(customerRequest.getFirstName());
+        existingCustomer.setLastName(customerRequest.getLastName());
+        existingCustomer.setEmail(customerRequest.getEmail());
+        existingCustomer.setPhone(customerRequest.getPhone());
+        existingCustomer.setAddress(customerRequest.getAddress());
 
         Customer updatedCustomer = customerRepository.save(existingCustomer);
-        return customerMapper.toDTO(updatedCustomer);
+        return customerMapper.toResponse(updatedCustomer);
     }
 
     @Override
