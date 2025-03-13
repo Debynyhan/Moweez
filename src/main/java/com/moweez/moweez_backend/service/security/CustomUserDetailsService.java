@@ -1,7 +1,7 @@
 package com.moweez.moweez_backend.service.security;
 
-import com.moweez.moweez_backend.entity.Customer;
-import com.moweez.moweez_backend.entity.ServiceProvider;
+import com.moweez.moweez_backend.entity.AppUser;
+
 import com.moweez.moweez_backend.repository.CustomerRepository;
 import com.moweez.moweez_backend.repository.ServiceProviderRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,18 +23,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // First, try to find a customer by email.
-        Customer customer = customerRepository.findByEmail(email).orElse(null);
-        if (customer != null) {
-            return new CustomUserDetails(customer);
-        }
-
-        // If not found, try to find a service provider by email.
-        ServiceProvider serviceProvider = serviceProviderRepository.findByEmail(email).orElse(null);
-        if (serviceProvider != null) {
-            return new CustomUserDetails(serviceProvider);
-        }
-
-        throw new UsernameNotFoundException("User not found with email: " + email);
+        AppUser appUser = customerRepository.findByEmail(email)
+                .map(customer -> (AppUser) customer)
+                .orElseGet(() -> serviceProviderRepository.findByEmail(email)
+                        .map(serviceProvider -> (AppUser) serviceProvider)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email)));
+        return new CustomUserDetails(appUser);
     }
 }

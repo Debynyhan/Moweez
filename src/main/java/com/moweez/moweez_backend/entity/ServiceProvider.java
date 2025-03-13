@@ -18,7 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "service_provider", indexes = { @Index(name = "idx_service_provider_email", columnList = "email") })
 @EntityListeners(AuditingEntityListener.class) // Enable JPA Auditing for this entity
-public class ServiceProvider implements CredentialsContainer {
+public class ServiceProvider implements AppUser, CredentialsContainer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

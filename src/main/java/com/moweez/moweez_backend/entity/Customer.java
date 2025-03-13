@@ -21,7 +21,7 @@ import java.util.Set;
     @Index(name = "idx_customers_email", columnList = "email")
 })
 @EntityListeners(AuditingEntityListener.class) // Enable JPA Auditing for this entity
-public class Customer implements CredentialsContainer {
+public class Customer implements AppUser, CredentialsContainer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
